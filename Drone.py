@@ -12,6 +12,7 @@
 # Libraries
 import Coords
 import socket
+import DroneUtils
 
 from typing import Type
 
@@ -21,21 +22,26 @@ from typing import Type
 #   relay points in a network.
 ###########################################
 class Drone:
-    def __init__(self, port: int,
+    def __init__(self, name: str,
+                 port: int,
                  host: str,
                  coords: Type[Coords.Coords] = Coords.Coords()) -> None:
+        self.name = name
         self.port = port
         self.coords = coords
         self.host = host
+        self.gNFxn = DroneUtils.localSimGetNeighbors
+        self.neighbors = []
+        self.distances = []
     
     ###########################################
     # startUp():
     #   Initiates the drone to begin listening
     #   for incoming  messages.
     # args:
-    #   NA
+    #   NA.
     # return:
-    #   NA
+    #   NA.
     ###########################################
     def startUp(self):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -48,3 +54,28 @@ class Drone:
                     data = conn.recv(1024)
                     if not data: break
                     conn.sendall(bytes(1))
+                    
+    ###########################################
+    # getNeighbors():
+    #   Generate a list of neighbors within
+    #   range of the current drone.
+    # args:
+    #   @N: List of neighbors to get neighbors
+    #       from.
+    # return:
+    #   NA.
+    ###########################################
+    def getNeighbors(self, N: list):
+        self.neighbors, self.distances = self.gNFxn(N)
+        
+    ###########################################
+    # setGetNeighborsFxn():
+    #   Set the function used to obtain the
+    #   neighbors of the drone.
+    # args:
+    #   @fxn: Function to use.
+    # return:
+    #   NA.
+    ###########################################
+    def setGetNeighborsFxn(self, fxn):
+        self.gNFxn = fxn

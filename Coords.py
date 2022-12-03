@@ -15,3 +15,14 @@ class Coords:
         self.x = x
         self.y = y
         self.z = z
+        
+    ###########################################
+    # getTupe():
+    #   Get the coordinates in a list.
+    # args:
+    #   NA.
+    # return:
+    #   List.
+    ###########################################
+    def getList(self):
+        return [self.x, self.y, self.z]
