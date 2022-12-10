@@ -34,7 +34,7 @@ def localSimSendMessage(port: int,
             s.sendall(message)
             
 ###########################################
-# dijskra():
+# getDijskraPath():
 #       Produce a path vector from a
 #       startingn node to a destination
 #       node.
@@ -47,7 +47,7 @@ def localSimSendMessage(port: int,
 # return:
 #       Path.
 ###########################################
-def genDijskraVector(G: list,
+def genDijskraPath(G: list,
                      origin: str,
                      dest: str):
         queue = {i.name:i for i in G}
