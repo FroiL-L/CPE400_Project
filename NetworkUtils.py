@@ -35,18 +35,24 @@ def localSimSendMessage(port: int,
             
 ###########################################
 # dijskra():
-#       Produce a distance vector from one
-#       node to all other nodes.
+#       Produce a path vector from a
+#       startingn node to a destination
+#       node.
 # args:
-#       @V: 1D list of nodes.
-#       @E: 1D list of edges.
+#       @G: Graph of nodes and edges that
+#               make up the network.
+#       @origin: Name of node to start path
+#               finding at.
+#       @dest: Name of destination node.
 # return:
-#       List.
+#       Path.
 ###########################################
 def genDijskraVector(G: list,
-                     origin: int):
+                     origin: str,
+                     dest: str):
         queue = {i.name:i for i in G}
         distances = {i.name:10000 for i in G}
+        previous = {i.name: None for i in G}
         
         distances[origin] = 0
         
@@ -55,6 +61,10 @@ def genDijskraVector(G: list,
                 nodeKey = getNearestNodeKey(queue, distances)
                 nearestNode = queue[nodeKey]
                 nearestDist = distances[nodeKey]
+                
+                # Test for destination
+                if nodeKey == dest:
+                        break
                 
                 # Remove node from queue
                 queue.pop(nodeKey)
@@ -68,9 +78,16 @@ def genDijskraVector(G: list,
                         cost = nearestDist + secondDistances[n]
                         if cost < distances[secondNeighbor]:
                                 distances[secondNeighbor] = cost
+                                previous[secondNeighbor] = nodeKey
                         
-                        
-        return distances
+        # Backtrack from destination to get path
+        path = []
+        currPos = dest
+        while previous[currPos]:
+                path.insert(0, currPos)
+                currPos = previous[currPos]
+                
+        return path
 
 ###########################################
 ###########################################
