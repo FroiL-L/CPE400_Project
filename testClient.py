@@ -12,11 +12,11 @@ import Client
 import Network
 import Coords
 import Drone
+import os
 
 PORT = 8008
 HOST = "127.0.0.1"
-fPath = "/mnt/c/Users/froil/OneDrive/Documents/UNR/Classwork/CPE 400 - Computer Networking/Project/Coords.py"
-
+fPath = os.path.join(os.getcwd(),"Coords.py")
 # Establish network
 network = Network.Network()
 coords1 = Coords.Coords(1,1,1)
