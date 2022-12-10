@@ -8,7 +8,6 @@
 #       30 November 2022
 ###########################################
 
-import Drone
 import Coords
 import math
 
@@ -31,18 +30,19 @@ from typing import Type
 #   @distances: In-order distance from
 #       the main drone to all neighbors.
 ###########################################
-def localSimGetNeighbors(N: list, 
-                         drone: Drone, 
-                         range: float):
-    neighbors = []
+def localSimGetNeighbors(N, 
+                         drone):
+    link_neighbors = []
     distances = []
-    mainCoords = drone.coords.getList()
-    
+    mainCoords = drone.getCoords().getList()
+    maxdist = drone.getRadius()
+
     for n in N:
-        tmpCoords = n.coords.getList()
+        tmpCoords = n.getCoords().getList()
         distance = math.dist(mainCoords, tmpCoords)
-        if distance >= range:
-            neighbors.append(n)
+        #handle edge case where drone is getting distance to itself
+        if distance <= drone.getRadius() and distance > 0:
+            link_neighbors.append(n)
             distances.append(distance)
         
-    return neighbors, distances
+    return link_neighbors, distances

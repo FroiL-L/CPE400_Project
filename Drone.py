@@ -22,6 +22,8 @@ from typing import Type
 #   relay points in a network.
 ###########################################
 class Drone:
+    #radius that drones can reach is 1 km
+    radius = 1000;
     def __init__(self, name: str,
                  port: int,
                  host: str,
@@ -66,7 +68,8 @@ class Drone:
     #   NA.
     ###########################################
     def getNeighbors(self, N: list):
-        self.neighbors, self.distances = self.gNFxn(N)
+        self.neighbors, self.distances = self.gNFxn(N, self, self.connection_radius)
+        return self.neighbors, self.distances
         
     ###########################################
     # setGetNeighborsFxn():
@@ -79,3 +82,12 @@ class Drone:
     ###########################################
     def setGetNeighborsFxn(self, fxn):
         self.gNFxn = fxn
+    
+    def updateCoords(self, coords):
+        self.coords = coords
+
+    def getRadius(self):
+        return Drone.radius
+
+    def getCoords(self):
+        return self.coords
