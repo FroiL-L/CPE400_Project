@@ -13,6 +13,7 @@ import subprocess as sp
 import os
 import socket
 import sys
+import time
 import Drone
 
 ###########################################
@@ -51,6 +52,7 @@ def localSimSendMessage(path,
                 s.connect((ip, port))
                 s.sendall(message)
                 s.recv(1024)
+        time.sleep(1)
             
 ###########################################
 # getDijskraPath():
