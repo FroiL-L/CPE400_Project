@@ -74,5 +74,17 @@ class Client:
             print(e.strerror)
             return 1
         
+        # Add file header to message
+        hDelim = "$"
+        fName = filePath.split("/")[-1]
+        header = bytes(hDelim + fName + hDelim, "utf-8")
+        contents = header + contents
+        
         #TODO: Determine destination by gateway
-        self.network.sendMessage(self.cnxnName, "4000,3000", contents)
+        dest = self.network.getGateway()
+        
+        if not dest:
+            print("Error: No gateways allocated.")
+            return None
+        
+        self.network.sendMessage(self.cnxnName, dest, contents)

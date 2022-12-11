@@ -25,6 +25,7 @@ from typing import Type
 class Network:
     def __init__(self) -> None:
         self.drones = []
+        self.gateways = []
         self.droneCoords = []
         self.cnxn: socket.socket = None
         self.smp = netu.localSimSendMessage
@@ -40,6 +41,10 @@ class Network:
     def addDrone(self, newDrone: Type[Drone.Drone]):
         self.drones.append(newDrone)
         self.droneCoords.append(newDrone.coords)
+        
+        # Test for gateway drone
+        if newDrone.getGateway():
+            self.gateways.append(newDrone)
         
         # Add to potential neighbors
         for drone in self.drones:
@@ -61,7 +66,8 @@ class Network:
             print("Error: Could not connect to network. No messengers \
                   in network.")
             return 1
-        # TODO: Choose drone based on distance
+        
+        # Connect to closest drone
         coordsList = coords.getList()
         minDist = math.dist(self.drones[0].getCoords().getList(), coordsList)
         closestDrone = self.drones[0]
@@ -119,3 +125,9 @@ class Network:
     ###########################################
     def setSMP(self, fxn):
         self.smp = fxn
+        
+    def getGateway(self):
+        if len(self.gateways) == 0:
+            return None
+        
+        return self.gateways[0].getName()

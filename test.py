@@ -12,13 +12,33 @@ DEST = "4000,3000"
 def testSendFileMessage(fname, client):
     fPath = os.path.join(os.getcwd(), fname)
     client.sendFile(fPath)
+    
+def testSaveFile(drone):
+    global FNAME
+    filePath = os.path.join(os.getcwd(), FNAME)
+    try:
+        with open(filePath, "rb") as f:
+            contents = f.read()
+    except OSError as e:
+        print(e.strerror)
+        return 1
+    
+    # Add file header to message
+    hDelim = "$"
+    fName = "Coords.py"
+    header = bytes(hDelim + fName + hDelim, "utf-8")
+    contents = header + contents
+    
+    drone.saveFile(contents)
+    
 
 def testDij(client):
     import NetworkUtils as netu
     global FNAME
     global DEST
     
-    distances = netu.genDijskraPath(client.network.drones,client.cnxnName,DEST)
+    dest = client.network.getGateway()
+    distances = netu.genDijskraPath(client.network.drones,client.cnxnName,dest)
     return distances
 
 def generate_client(network):
@@ -43,6 +63,10 @@ def generate_network():
     network.addDrone(Drone.Drone("2000,3000",PORT,HOST,Coords.Coords(2000,3000)))
     network.addDrone(Drone.Drone("3000,4000",PORT,HOST,Coords.Coords(3000,4000)))
     network.addDrone(Drone.Drone("3000,2000",PORT,HOST,Coords.Coords(3000,2000)))
+    
+    gatewayDrone = Drone.Drone("1000,3000",PORT,HOST,Coords.Coords(1000,3000))
+    gatewayDrone.setGateway(True)
+    network.addDrone(gatewayDrone)
     
     return network
 
