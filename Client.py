@@ -30,6 +30,7 @@ class Client:
         self.coords = coords    # Client geographical coordinates.
         self.network = network  # Network to pass messages through.
         self.cnxn = None        # IP of node that we are connected to.
+        self.cnxnName = None    # Name of node that we are connected to. 
         
     ###########################################
     # updateCoords:
@@ -46,7 +47,8 @@ class Client:
         newCnxn = self.network.connect(coords)
         # Establish new connection only when new one is found.
         if newCnxn != self.cnxn:
-            self.cnxn = newCnxn
+            self.cnxn = newCnxn.getHost()
+            self.cnxnName = newCnxn.getName()
     
     ###########################################
     # sendFile():
@@ -72,4 +74,5 @@ class Client:
             print(e.strerror)
             return 1
         
-        self.network.sendMessage(self.port, self.cnxn, contents)
+        #TODO: Determine destination by gateway
+        self.network.sendMessage(self.cnxnName, "4000,3000", contents)

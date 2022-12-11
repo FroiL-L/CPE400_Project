@@ -12,6 +12,8 @@
 import socket
 import Drone
 import Coords
+import NetworkUtils as netu
+import math
 
 from typing import Type
 
@@ -22,11 +24,10 @@ from typing import Type
 ###########################################
 class Network:
     def __init__(self) -> None:
-        from NetworkUtils import localSimSendMessage as lsmp
         self.drones = []
         self.droneCoords = []
         self.cnxn: socket.socket = None
-        self.smp = lsmp
+        self.smp = netu.localSimSendMessage
         
     ###########################################
     # addDrone():
@@ -39,6 +40,10 @@ class Network:
     def addDrone(self, newDrone: Type[Drone.Drone]):
         self.drones.append(newDrone)
         self.droneCoords.append(newDrone.coords)
+        
+        # Add to potential neighbors
+        for drone in self.drones:
+            drone.getNeighbors(self.drones)
         
     ###########################################
     # connect():
@@ -57,7 +62,16 @@ class Network:
                   in network.")
             return 1
         # TODO: Choose drone based on distance
-        return self.drones[0].host
+        coordsList = coords.getList()
+        minDist = math.dist(self.drones[0].getCoords().getList(), coordsList)
+        closestDrone = self.drones[0]
+        for drone in self.drones:
+            tmp_dist = math.dist(drone.getCoords().getList(), coordsList)
+            if tmp_dist < minDist:
+                minDist = tmp_dist
+                closestDrone = drone
+                
+        return closestDrone
     
     ###########################################
     # sendMessage():
@@ -71,10 +85,26 @@ class Network:
     #   0: Success.
     #   1: Failure.
     ###########################################
-    def sendMessage(self, port: int,
-                    ip: str,
+    def sendMessage(self, source: str,
+                    dest: str,
                     message: bytes):
-        self.smp(port, ip, message)
+        # Find destination drone
+        destDrone = None
+        sourceDrone = None
+        for drone in self.drones:
+            if drone.getName() == source:
+                sourceDrone = True
+            elif drone.getName() == dest:
+                destDrone = True
+                
+        # Edge case
+        if not destDrone or not sourceDrone:
+            print("Error: Drone not found.")
+            return 1
+             
+        # Send message 
+        path = netu.genDijskraPath(self.drones, source, dest)
+        self.smp(path, message, self.drones)
             
         return 0
     

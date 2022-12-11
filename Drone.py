@@ -23,7 +23,7 @@ from typing import Type
 ###########################################
 class Drone:
     #radius that drones can reach is 1 km
-    radius = 1000;
+    radius = 1000
     def __init__(self, name: str,
                  port: int,
                  host: str,
@@ -32,9 +32,11 @@ class Drone:
         self.port = port
         self.coords = coords
         self.host = host
+        self.gateway = False
         self.gNFxn = DroneUtils.localSimGetNeighbors
         self.neighbors = []
         self.distances = []
+        self.radius = 1000
     
     ###########################################
     # startUp():
@@ -54,6 +56,7 @@ class Drone:
                 print('Connected by', addr)
                 while True:
                     data = conn.recv(1024)
+                    print(data)
                     if not data: break
                     conn.sendall(bytes(1))
                     
@@ -68,7 +71,7 @@ class Drone:
     #   NA.
     ###########################################
     def getNeighbors(self, N: list):
-        self.neighbors, self.distances = self.gNFxn(N, self, self.connection_radius)
+        self.neighbors, self.distances = self.gNFxn(N, self)
         return self.neighbors, self.distances
         
     ###########################################
@@ -91,3 +94,18 @@ class Drone:
 
     def getCoords(self):
         return self.coords
+    
+    def getHost(self):
+        return self.host
+    
+    def getPort(self):
+        return self.port
+    
+    def getName(self):
+        return self.name
+    
+    def setGateway(self, switch: bool):
+        if switch:
+            self.gateway = True
+        else:
+            self.gateway = False
