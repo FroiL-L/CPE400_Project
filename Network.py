@@ -6,6 +6,9 @@
 #   Froilan Luna-Lopez
 #       University of Nevada, Reno
 #       12 November 2022
+# @coauthor:
+#    Tristan Bailey
+#       University of Nevada, Reno
 ###########################################
 
 # Libraries
@@ -131,3 +134,28 @@ class Network:
             return None
         
         return self.gateways[0].getName()
+
+    def updateDroneLocation(self, name, newCoords):
+        for drone in self.drones():
+            if drone.getName() == name:
+                drone.updateCoords(newCoords)
+                return
+        raise Exception("Error 404: Drone not found")
+    
+    def getAllDroneCoords(self):
+        droneList = []
+        gatewayList = []
+        for drone in self.drones:
+            if(drone.getGateway()):
+                gatewayList.append(drone.getCoords())
+            else:
+                droneList.append(drone.getCoords())
+        return droneList, gatewayList
+
+    def getDroneByCoords(self, coords):
+        l1 = coords.getList()
+        for drone in self.drones:
+            l2 = drone.getCoords().getList()
+            if(l1[0] == l2[0] and l1[1] == l2[1]):
+                return drone.getName()
+        return None

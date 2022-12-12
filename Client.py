@@ -88,3 +88,5 @@ class Client:
             return None
         
         self.network.sendMessage(self.cnxnName, dest, contents)
+    def getCoords(self):
+        return self.coords
