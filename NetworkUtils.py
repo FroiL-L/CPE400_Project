@@ -12,6 +12,8 @@
 import subprocess as sp
 import os
 import socket
+import sys
+import time
 import Drone
 
 ###########################################
@@ -23,15 +25,34 @@ import Drone
 #   @ip: IP address to send info to.
 #   @message: Message to send.
 ###########################################
-def localSimSendMessage(port: int,
-                        ip: str,
-                        message: bytes):
+def localSimSendMessage(path,
+                        message: bytes,
+                        drones):
     currDir = os.getcwd()
-    sp.Popen(["python3", "SimStartupDrone.py", ip, str(port)]) # Run executable that starts a drone
-                                                                    # to begin listening for messages.
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-            s.connect((ip, port))
-            s.sendall(message)
+    
+    droneDict = {i.name:i for i in drones}
+    dronePath = {i:droneDict[i] for i in path}
+    
+    for destDrone in dronePath.values():
+        # Extract data from destination drone
+        ip = destDrone.getHost()
+        port = destDrone.getPort()
+        name = destDrone.getName()
+        coords = destDrone.getCoords().getList()
+        x,y,z = [str(i) for i in coords]
+        
+        # Start up simulation drone to listen for messages.
+        pyComm = sys.executable
+        command = [pyComm, "SimStartupDrone.py", str(ip), str(port), str(name), x, y, z]
+        sp.Popen(command)
+        
+        # Send message
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+                s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+                s.connect((ip, port))
+                s.sendall(message)
+                s.recv(1024)
+        time.sleep(1)
             
 ###########################################
 # getDijskraPath():
@@ -86,6 +107,7 @@ def genDijskraPath(G: list,
         while previous[currPos]:
                 path.insert(0, currPos)
                 currPos = previous[currPos]
+        path.insert(0,currPos)
                 
         return path
 

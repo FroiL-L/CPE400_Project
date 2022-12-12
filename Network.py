@@ -6,12 +6,17 @@
 #   Froilan Luna-Lopez
 #       University of Nevada, Reno
 #       12 November 2022
+# @coauthor:
+#    Tristan Bailey
+#       University of Nevada, Reno
 ###########################################
 
 # Libraries
 import socket
 import Drone
 import Coords
+import NetworkUtils as netu
+import math
 
 from typing import Type
 
@@ -22,11 +27,11 @@ from typing import Type
 ###########################################
 class Network:
     def __init__(self) -> None:
-        from NetworkUtils import localSimSendMessage as lsmp
         self.drones = []
+        self.gateways = []
         self.droneCoords = []
         self.cnxn: socket.socket = None
-        self.smp = lsmp
+        self.smp = netu.localSimSendMessage
         
     ###########################################
     # addDrone():
@@ -39,6 +44,14 @@ class Network:
     def addDrone(self, newDrone: Type[Drone.Drone]):
         self.drones.append(newDrone)
         self.droneCoords.append(newDrone.coords)
+        
+        # Test for gateway drone
+        if newDrone.getGateway():
+            self.gateways.append(newDrone)
+        
+        # Add to potential neighbors
+        for drone in self.drones:
+            drone.getNeighbors(self.drones)
         
     ###########################################
     # connect():
@@ -56,8 +69,18 @@ class Network:
             print("Error: Could not connect to network. No messengers \
                   in network.")
             return 1
-        # TODO: Choose drone based on distance
-        return self.drones[0].host
+        
+        # Connect to closest drone
+        coordsList = coords.getList()
+        minDist = math.dist(self.drones[0].getCoords().getList(), coordsList)
+        closestDrone = self.drones[0]
+        for drone in self.drones:
+            tmp_dist = math.dist(drone.getCoords().getList(), coordsList)
+            if tmp_dist < minDist:
+                minDist = tmp_dist
+                closestDrone = drone
+                
+        return closestDrone
     
     ###########################################
     # sendMessage():
@@ -71,10 +94,26 @@ class Network:
     #   0: Success.
     #   1: Failure.
     ###########################################
-    def sendMessage(self, port: int,
-                    ip: str,
+    def sendMessage(self, source: str,
+                    dest: str,
                     message: bytes):
-        self.smp(port, ip, message)
+        # Find destination drone
+        destDrone = None
+        sourceDrone = None
+        for drone in self.drones:
+            if drone.getName() == source:
+                sourceDrone = True
+            elif drone.getName() == dest:
+                destDrone = True
+                
+        # Edge case
+        if not destDrone or not sourceDrone:
+            print("Error: Drone not found.")
+            return 1
+             
+        # Send message 
+        path = netu.genDijskraPath(self.drones, source, dest)
+        self.smp(path, message, self.drones)
             
         return 0
     
@@ -89,3 +128,34 @@ class Network:
     ###########################################
     def setSMP(self, fxn):
         self.smp = fxn
+        
+    def getGateway(self):
+        if len(self.gateways) == 0:
+            return None
+        
+        return self.gateways[0].getName()
+
+    def updateDroneLocation(self, name, newCoords):
+        for drone in self.drones():
+            if drone.getName() == name:
+                drone.updateCoords(newCoords)
+                return
+        raise Exception("Error 404: Drone not found")
+    
+    def getAllDroneCoords(self):
+        droneList = []
+        gatewayList = []
+        for drone in self.drones:
+            if(drone.getGateway()):
+                gatewayList.append(drone.getCoords())
+            else:
+                droneList.append(drone.getCoords())
+        return droneList, gatewayList
+
+    def getDroneByCoords(self, coords):
+        l1 = coords.getList()
+        for drone in self.drones:
+            l2 = drone.getCoords().getList()
+            if(l1[0] == l2[0] and l1[1] == l2[1]):
+                return drone.getName()
+        return None
