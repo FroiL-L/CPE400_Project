@@ -4,6 +4,8 @@ import Coords
 import Client
 import os
 
+from NetworkController import NetworkController
+
 HOST = "127.0.0.1"
 PORT = 8008
 FNAME = "Coords.py"
@@ -52,28 +54,21 @@ def generate_client(network):
     
     return client
 
-def generate_network():
-    global HOST
-    global PORT
+def generate_network(controller):
+    print("Using controller")
+    controller.addDrone("3000,3000",3000,3000)
+    controller.addDrone("4000,3000",4000,3000)
+    controller.addDrone("2000,3000",2000,3000)
+    controller.addDrone("3000,4000",3000,4000)
+    controller.addDrone("3000,2000",3000,2000)
+    controller.addGateway("1000,3000", 1000,3000)
     
-    network = Network.Network()
-    
-    network.addDrone(Drone.Drone("3000,3000",PORT,HOST,Coords.Coords(3000,3000)))
-    network.addDrone(Drone.Drone("4000,3000",PORT,HOST,Coords.Coords(4000,3000)))
-    network.addDrone(Drone.Drone("2000,3000",PORT,HOST,Coords.Coords(2000,3000)))
-    network.addDrone(Drone.Drone("3000,4000",PORT,HOST,Coords.Coords(3000,4000)))
-    network.addDrone(Drone.Drone("3000,2000",PORT,HOST,Coords.Coords(3000,2000)))
-    
-    gatewayDrone = Drone.Drone("1000,3000",PORT,HOST,Coords.Coords(1000,3000))
-    gatewayDrone.setGateway(True)
-    network.addDrone(gatewayDrone)
-    
-    return network
+    return controller.getNetwork()
 
 def main():
     global FNAME
-    
-    network = generate_network()
+    controller = NetworkController()
+    network = generate_network(controller)
     client = generate_client(network)
     path = testDij(client)
     print(path)

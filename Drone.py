@@ -7,6 +7,9 @@
 #   Froilan Luna-Lopez
 #       University of Nevada, Reno
 #       12 November 2022
+# @coauthor:
+#   Tristan Bailey
+#        University of Nevada, Reno
 ###########################################
 
 # Libraries
