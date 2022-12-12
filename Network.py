@@ -100,7 +100,7 @@ class Network:
         for drone in self.drones:
             if drone.getName() == source:
                 sourceDrone = True
-            elif drone.getName() == dest:
+            if drone.getName() == dest:
                 destDrone = True
                 
         # Edge case

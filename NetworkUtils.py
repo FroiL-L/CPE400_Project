@@ -45,14 +45,24 @@ def localSimSendMessage(path,
         pyComm = sys.executable
         command = [pyComm, "SimStartupDrone.py", str(ip), str(port), str(name), x, y, z]
         sp.Popen(command)
-        
+        time.sleep(0.1)
         # Send message
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-                s.connect((ip, port))
+                cxnxMade = False
+                timeouts = 0
+                while not cxnxMade and timeouts < 5:
+                        try:
+                                s.connect((ip, port))
+                                cxnxMade = True
+                        except:
+                                timeouts += 1
+                if timeouts == 5:
+                        print("Error: Could not establish connection.")
+                        return
                 s.sendall(message)
-                s.recv(1024)
-        time.sleep(1)
+                #s.recv(1024)
+        #time.sleep(2)
             
 ###########################################
 # getDijskraPath():
