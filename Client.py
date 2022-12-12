@@ -30,6 +30,7 @@ class Client:
         self.coords = coords    # Client geographical coordinates.
         self.network = network  # Network to pass messages through.
         self.cnxn = None        # IP of node that we are connected to.
+        self.cnxnName = None    # Name of node that we are connected to. 
         
     ###########################################
     # updateCoords:
@@ -46,7 +47,8 @@ class Client:
         newCnxn = self.network.connect(coords)
         # Establish new connection only when new one is found.
         if newCnxn != self.cnxn:
-            self.cnxn = newCnxn
+            self.cnxn = newCnxn.getHost()
+            self.cnxnName = newCnxn.getName()
     
     ###########################################
     # sendFile():
@@ -72,4 +74,19 @@ class Client:
             print(e.strerror)
             return 1
         
-        self.network.sendMessage(self.port, self.cnxn, contents)
+        # Add file header to message
+        hDelim = "$"
+        fName = filePath.split("/")[-1]
+        header = bytes(hDelim + fName + hDelim, "utf-8")
+        contents = header + contents
+        
+        #TODO: Determine destination by gateway
+        dest = self.network.getGateway()
+        
+        if not dest:
+            print("Error: No gateways allocated.")
+            return None
+        
+        self.network.sendMessage(self.cnxnName, dest, contents)
+    def getCoords(self):
+        return self.coords
