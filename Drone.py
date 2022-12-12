@@ -41,6 +41,7 @@ class Drone:
         self.neighbors = []
         self.distances = []
         self.radius = 1000
+        self.battery = 100
         
         os.makedirs(os.getcwd() + "/" + name, exist_ok=True)
     
@@ -54,9 +55,20 @@ class Drone:
     #   NA.
     ###########################################
     def startUp(self):
+        fName = None
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            s.bind((self.host, self.port))
+            cxnxMade = False
+            timeouts = 0
+            while not cxnxMade and timeouts < 5:
+                try:
+                    s.bind((self.host, self.port))
+                    cxnxMade = True
+                except:
+                    timeouts += 1
+            if not cxnxMade and timeouts == 5:
+                print("Could not establish server connection.")
+                return
             s.listen(1)
             conn, addr = s.accept()
             with conn:
@@ -64,8 +76,8 @@ class Drone:
                 while True:
                     data = conn.recv(1024)
                     if not data: break
-                    self.saveFile(data)
-                    conn.sendall(bytes(1))
+                    fName = self.saveFile(data, fName)
+                    #conn.sendall(bytes(1))
                     
     ###########################################
     # getNeighbors():
@@ -120,20 +132,23 @@ class Drone:
         else:
             self.gateway = False
             
-    def saveFile(self, contents):
+    def saveFile(self, contents, fName=None):
         delim = bytes("$", "utf-8")
         data = contents
+        
         s = None
-        m = None
         e = None
-        for _ in range(2):
-            s, m, e = data.partition(delim)
-            data = e
-            
-        print(s)
-        print(m)
-        print(e)
-            
-        with open(self.name + "/" + s.decode(), "wb+") as f:
+        if not fName:
+            s = None
+            m = None
+            e = None
+            for _ in range(2):
+                s, m, e = data.partition(delim)
+                data = e
+        else:
+            s = fName
+            e = contents
+           
+        with open(self.name + "/" + s.decode(), "ab+") as f:
             f.write(e)
-        return
+        return s

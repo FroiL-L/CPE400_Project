@@ -43,6 +43,14 @@ def testDij(client):
     distances = netu.genDijskraPath(client.network.drones,client.cnxnName,dest)
     return distances
 
+def testConsv(client):
+    import NetworkUtils as netu
+    global DEST
+    
+    dest = client.network.getGateway()
+    distances = netu.genConsvPath(client.network.drones, client.cnxnName, dest)
+    return distances
+
 def generate_client(network):
     global HOST
     global PORT
@@ -62,7 +70,7 @@ def generate_network(controller):
     controller.addDrone("3000,4000",3000,4000)
     controller.addDrone("3000,2000",3000,2000)
     controller.addGateway("1000,3000", 1000,3000)
-    
+   
     return controller.getNetwork()
 
 def main():
@@ -70,9 +78,10 @@ def main():
     controller = NetworkController()
     network = generate_network(controller)
     client = generate_client(network)
-    path = testDij(client)
-    print(path)
-    testSendFileMessage(FNAME, client)
+    #path = testDij(client)
+    #print(path)
+    #testSendFileMessage(FNAME, client)
+    testConsv(client)
     
     return
 
