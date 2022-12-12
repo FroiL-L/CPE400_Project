@@ -38,6 +38,7 @@ class Drone:
         self.neighbors = []
         self.distances = []
         self.radius = 1000
+        self.battery = 100
         
         os.makedirs(os.getcwd() + "/" + name, exist_ok=True)
     

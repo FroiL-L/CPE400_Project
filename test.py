@@ -41,6 +41,14 @@ def testDij(client):
     distances = netu.genDijskraPath(client.network.drones,client.cnxnName,dest)
     return distances
 
+def testConsv(client):
+    import NetworkUtils as netu
+    global DEST
+    
+    dest = client.network.getGateway()
+    distances = netu.genConsvPath(client.network.drones, client.cnxnName, dest)
+    return distances
+
 def generate_client(network):
     global HOST
     global PORT
@@ -60,9 +68,15 @@ def generate_network():
     
     network.addDrone(Drone.Drone("3000,3000",PORT,HOST,Coords.Coords(3000,3000)))
     network.addDrone(Drone.Drone("4000,3000",PORT,HOST,Coords.Coords(4000,3000)))
-    network.addDrone(Drone.Drone("2000,3000",PORT,HOST,Coords.Coords(2000,3000)))
+    network.addDrone(Drone.Drone("2000,4000",PORT,HOST,Coords.Coords(2000,4000)))
     network.addDrone(Drone.Drone("3000,4000",PORT,HOST,Coords.Coords(3000,4000)))
     network.addDrone(Drone.Drone("3000,2000",PORT,HOST,Coords.Coords(3000,2000)))
+    network.addDrone(Drone.Drone("1000,4000",PORT,HOST,Coords.Coords(1000,4000)))
+    
+    # Add drone with dead battery
+    deadDrone = Drone.Drone("2000,3000",PORT,HOST,Coords.Coords(2000,3000))
+    deadDrone.battery = 0
+    network.addDrone(deadDrone)
     
     gatewayDrone = Drone.Drone("1000,3000",PORT,HOST,Coords.Coords(1000,3000))
     gatewayDrone.setGateway(True)
@@ -75,9 +89,10 @@ def main():
     
     network = generate_network()
     client = generate_client(network)
-    path = testDij(client)
-    print(path)
-    testSendFileMessage(FNAME, client)
+    #path = testDij(client)
+    #print(path)
+    #testSendFileMessage(FNAME, client)
+    testConsv(client)
     
     return
 

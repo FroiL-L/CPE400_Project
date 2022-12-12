@@ -112,6 +112,88 @@ def genDijskraPath(G: list,
         return path
 
 ###########################################
+# genConsvPath():
+#       Generates a path that maximizes
+#       the weakest link between the
+#       source and destination node.
+# args:
+#       @G: Graph of nodes and edges that
+#               make up the network.
+#       @origin: Name of node to start path
+#               finding at.
+#       @dest: Name of destination node.
+# return:
+#       Path.
+###########################################
+def genConsvPath(G: list,
+                     origin: str,
+                     dest: str):
+        class node:
+                def __init__(self, entry) -> None:
+                        self.entry = entry
+                        self.visited = False                
+        # Convert graph into a dictionary
+        G_dict = {i.name:i for i in G}
+        
+        # Generate first iteration of neighbors into a queue
+        queue = [{i.name:node(i) for i in G_dict[origin].neighbors}]
+        record = {i.name:node(i) for i in G}
+        
+        # Iterate through neighbors
+        prevNodeKey = [origin]
+        path = []
+        wl = 10000
+        currWl = 10000
+        while queue:
+                # Extract neighbor metadata
+                neighborSet = queue[0]
+                neighborKeys = list(neighborSet.keys())
+                
+                # Test for no neighbors
+                if len(neighborKeys) == 0:
+                        queue.pop(0)
+                        prevNodeKey.pop(0)
+                        continue
+                                
+                # Extract first nested neighbors
+                neighbors = neighborSet[neighborKeys[0]].entry.neighbors
+                
+                # Update queue (remove touched node)
+                queue[0].pop(neighborKeys[0])
+                
+                # Test if next neighbor is destination
+                if neighborKeys[0] == dest:
+                        if currWl < wl: # Choose path with greatest weakest link
+                                path = prevNodeKey.copy()
+                                path.reverse()
+                                path.append(dest)
+                                wl = currWl
+                        elif currWl == wl and len(path) > len(prevNodeKey + 1): # Flip paths if less hops found
+                                path = prevNodeKey.copy()
+                                path.reverse()
+                                path.append(dest)
+                        continue
+                
+                if neighbors[0].battery < wl:
+                        currWl = neighbors[0].battery
+                
+                # Update variables to recurse into nested neighbors
+                if neighbors:
+                        #newQueue = {i.name:node(i) for i in neighbors}
+                        newQueue = {}
+                        for i in neighbors:
+                                if i.name not in prevNodeKey:
+                                        newQueue[i.name] = node(i)
+                        queue.insert(0, newQueue)
+                        prevNodeKey.insert(0, neighborKeys[0])
+                        continue
+                else:
+                        prevNodeKey.pop(0)
+                
+                
+        return path
+
+###########################################
 ###########################################
 
 def getNearestNodeKey(nodes: dict,
