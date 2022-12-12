@@ -137,7 +137,6 @@ def genConsvPath(G: list,
         
         # Generate first iteration of neighbors into a queue
         queue = [{i.name:node(i) for i in G_dict[origin].neighbors}]
-        record = {i.name:node(i) for i in G}
         
         # Iterate through neighbors
         prevNodeKey = [origin]
