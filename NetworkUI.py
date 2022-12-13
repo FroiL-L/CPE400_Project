@@ -11,6 +11,17 @@ from NetworkController import NetworkController
 from Coords import Coords
 import os
 
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
 class NetworkUI:
     def __init__(self) -> None:
         self.controller = NetworkController()
@@ -67,6 +78,11 @@ class NetworkUI:
         fname = input("Enter file name/path: ")
         self.controller.sendFile(fname)
         sleep(5)
+        temp = self.controller.verifyFileTransfer(fname)
+        if(temp):
+            print("File " + os.path.basename(fname) + " successfully transfered to gateway")
+        else:
+            print("File " + os.path.basename(fname) + " failed to transfer")
         input("Press Enter to Continue")
         self.clearTerminal()
 

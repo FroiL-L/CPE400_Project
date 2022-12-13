@@ -41,6 +41,10 @@ class NetworkController:
     def sendFile(self, fname):
         fPath = os.path.join(os.getcwd(), fname)
         self.client.sendFile(fPath)
+    
+    def verifyFileTransfer(self, fname):
+        gateway = self.droneNetwork.getGateway()
+        return os.path.exists(os.path.join(gateway, os.path.basename(fname)))
         
     #moves the client if there is a client, o.w. creates a client
     def moveClient(self, x, y):
