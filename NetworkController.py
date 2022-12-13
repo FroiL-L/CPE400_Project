@@ -1,7 +1,16 @@
+###########################################
+# NetworkController.py:
+#   Containes the user interface controller and methods for implementing the ui
+# @authors:
+#   Tristan Bailey
+#       University of Nevada, Reno
+###########################################
+
 from Network import Network
 from Coords import Coords
 from Drone import Drone
 from Client import Client
+import os
 
 HOST = "127.0.0.1"
 PORT = 8008
@@ -18,6 +27,8 @@ class NetworkController:
         gatewayDrone = Drone(name,PORT,HOST,Coords(int(x), int(y)))
         gatewayDrone.setGateway(True)
         self.droneNetwork.addDrone(gatewayDrone)
+    def updateNetworkMode(self):
+        pass
     
     def moveGateway(self, name, x ,y):
         self.moveDrone(name, x, y)
@@ -27,9 +38,10 @@ class NetworkController:
         self.client = Client(PORT,HOST,Coords(int(x), int(y)),self.droneNetwork)
         self.client.updateCoords(Coords(int(x), int(y)))
     
-    def sendFile(self):
-        #TODO
-        pass
+    def sendFile(self, fname):
+        fPath = os.path.join(os.getcwd(), fname)
+        self.client.sendFile(fPath)
+        
     #moves the client if there is a client, o.w. creates a client
     def moveClient(self, x, y):
         try:
