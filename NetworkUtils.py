@@ -51,13 +51,14 @@ def localSimSendMessage(path,
                 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
                 cxnxMade = False
                 timeouts = 0
-                while not cxnxMade and timeouts < 5:
+                while not cxnxMade and timeouts < 15:
                         try:
                                 s.connect((ip, port))
                                 cxnxMade = True
                         except:
                                 timeouts += 1
-                if not cxnxMade and timeouts == 5:
+                                time.sleep(1)
+                if not cxnxMade and timeouts == 15:
                         print("Error: Could not establish connection.")
                         return
                 s.sendall(message)

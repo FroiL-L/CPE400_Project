@@ -17,6 +17,7 @@ import Coords
 import socket
 import DroneUtils
 import os
+import time
 
 from typing import Type
 
@@ -60,13 +61,14 @@ class Drone:
             s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
             cxnxMade = False
             timeouts = 0
-            while not cxnxMade and timeouts < 5:
+            while not cxnxMade and timeouts < 15:
                 try:
                     s.bind((self.host, self.port))
                     cxnxMade = True
                 except:
                     timeouts += 1
-            if not cxnxMade and timeouts == 5:
+                    time.sleep(1)
+            if not cxnxMade and timeouts == 15:
                 print("Could not establish server connection.")
                 return
             s.listen(1)
