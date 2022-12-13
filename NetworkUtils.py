@@ -32,7 +32,7 @@ def localSimSendMessage(path,
     
     droneDict = {i.name:i for i in drones}
     dronePath = {i:droneDict[i] for i in path}
-    
+
     for destDrone in dronePath.values():
         # Extract data from destination drone
         ip = destDrone.getHost()
@@ -45,7 +45,7 @@ def localSimSendMessage(path,
         pyComm = sys.executable
         command = [pyComm, "SimStartupDrone.py", str(ip), str(port), str(name), x, y, z]
         sp.Popen(command)
-        time.sleep(0.1)
+        time.sleep(1)
         # Send message
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
                 s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -57,12 +57,12 @@ def localSimSendMessage(path,
                                 cxnxMade = True
                         except:
                                 timeouts += 1
-                if timeouts == 5:
+                if not cxnxMade and timeouts == 5:
                         print("Error: Could not establish connection.")
                         return
                 s.sendall(message)
                 #s.recv(1024)
-        #time.sleep(2)
+        time.sleep(1)
             
 ###########################################
 # getDijskraPath():
@@ -152,7 +152,7 @@ def genConsvPath(G: list,
         prevNodeKey = [origin]
         path = []
         wl = 10000
-        currWl = 10000
+        currWl = 9999
         while queue:
                 # Extract neighbor metadata
                 neighborSet = queue[0]
@@ -170,6 +170,9 @@ def genConsvPath(G: list,
                 # Update queue (remove touched node)
                 queue[0].pop(neighborKeys[0])
                 
+                if neighbors[0].battery < wl:
+                        currWl = neighbors[0].battery
+                
                 # Test if next neighbor is destination
                 if neighborKeys[0] == dest:
                         if currWl < wl: # Choose path with greatest weakest link
@@ -183,8 +186,8 @@ def genConsvPath(G: list,
                                 path.append(dest)
                         continue
                 
-                if neighbors[0].battery < wl:
-                        currWl = neighbors[0].battery
+                #if neighbors[0].battery < wl:
+                #        currWl = neighbors[0].battery
                 
                 # Update variables to recurse into nested neighbors
                 if neighbors:

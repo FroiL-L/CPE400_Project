@@ -16,13 +16,15 @@ import os
 
 PORT = 8008
 HOST = "127.0.0.1"
-fPath = os.path.join(os.getcwd(),"Coords.py")
+fPath = os.path.join(os.getcwd(),"TrainOnBridge.jpg")
 # Establish network
 network = Network.Network()
-coords1 = Coords.Coords(1,1,1)
-coords2 = Coords.Coords(-1,-1,-1)
-network.addDrone(Drone.Drone(PORT, HOST, coords1))
-network.addDrone(Drone.Drone(PORT, HOST, coords2))
+coords1 = Coords.Coords(1000,1000,1000)
+coords2 = Coords.Coords(-1000,-1000,-1000)
+gateway = Drone.Drone("1", PORT, HOST, coords1)
+gateway.setGateway(True)
+network.addDrone(gateway)
+network.addDrone(Drone.Drone("2", PORT, HOST, coords2))
 
 # Establish client
 coords3 = Coords.Coords(0,0,0)
