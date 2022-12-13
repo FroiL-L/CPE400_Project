@@ -77,6 +77,7 @@ class Client:
         # Add file header to message
         hDelim = "$"
         fName = filePath.split("/")[-1]
+        fName = filePath.split("\\")[-1]
         header = bytes(hDelim + fName + hDelim, "utf-8")
         contents = header + contents
         

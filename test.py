@@ -77,11 +77,12 @@ def main():
     global FNAME
     controller = NetworkController()
     network = generate_network(controller)
+    network.setMode(1)
     client = generate_client(network)
     #path = testDij(client)
+    path = testConsv(client)
     #print(path)
-    #testSendFileMessage(FNAME, client)
-    testConsv(client)
+    testSendFileMessage(FNAME, client)
     
     return
 
