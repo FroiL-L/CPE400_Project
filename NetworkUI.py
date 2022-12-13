@@ -1,11 +1,12 @@
 ###########################################
-# ui.py:
-#   Containes the user interface controller and methods for implementing the ui
+# NetworkUI.py:
+#   Containes the user interface print code as well as input code
 # @authors:
 #   Tristan Bailey
 #       University of Nevada, Reno
 ###########################################
 
+from time import sleep
 from NetworkController import NetworkController
 from Coords import Coords
 import os
@@ -15,7 +16,9 @@ class NetworkUI:
         self.controller = NetworkController()
 
     def addDrone(self):
+        print("**************")
         print("Adding New Drone to Network")
+        print("**************")
         self.unitWarning()
         name = input("Enter Drone's Name/ID: ")
         x = input("Enter drone's X cordinate: ")
@@ -24,20 +27,40 @@ class NetworkUI:
         self.clearTerminal()
 
     def moveDrone(self):
+        print("**************")
         print("Updating Drone Location")
+        print("**************")
         self.unitWarning()
         name = input("Enter Drone's Name/ID: ")
         x = input("Enter Drone's new X cordinate: ")
         y = input("Enter Drone's new Y cordinate: ")
         self.controller.moveDrone(name, x, y)
         self.clearTerminal()
+    
+    def selectNetworkMode(self):
+        print("**************")
+        print("Network Mode")
+        print("**************")
+        #TODO
+
 
     def sendFile(self):
-        #TODO
-        pass
+        print("**************")
+        print("Sending File")
+        print("**************")
+        print("Please Enter File path from current running directory (loc of NetworkApp")
+        print("\tor add file to this directory")
+        fname = input("Enter file name/path: ")
+        self.controller.sendFile(fname)
+        sleep(5)
+        input("Press Enter to Continue")
+        self.clearTerminal()
+
 
     def placeClient(self):
+        print("**************")
         print("Replacing Client in Map")
+        print("**************")
         self.unitWarning()
         x = input("Enter client's X cordinate: ")
         y = input("Enter client's Y cordinate: ")
@@ -45,7 +68,9 @@ class NetworkUI:
         self.clearTerminal()
 
     def addClient(self):
+        print("**************")
         print("Adding Client to Network")
+        print("**************")
         self.unitWarning()
         x = input("Enter client's X cordinate: ")
         y = input("Enter client's Y cordinate: ")
@@ -91,7 +116,9 @@ class NetworkUI:
             self.clearTerminal()
 
     def addGateway(self):
+        print("**************")
         print("Adding Gateway to Network")
+        print("**************")
         self.unitWarning()
         name = input("Enter Gateway's Name/ID: ")
         x = input("Enter Gateway's X cordinate: ")
@@ -99,7 +126,9 @@ class NetworkUI:
         self.controller.addGateway(name, x, y)
         self.clearTerminal()
     def moveGateway(self):
+        print("**************")
         print("Updating Gateway Location")
+        print("**************")
         self.unitWarning()
         name = input("Enter Gateway's Name/ID: ")
         x = input("Enter Gateway's new X cordinate: ")
@@ -118,6 +147,9 @@ class NetworkUI:
     def mainMenu(self):
         exit = False
         while(not(exit)):
+            print("**************")
+            print("Main Progam Menu")
+            print("**************")
             print("Enter the following operations to perform the specified action on the drone network")
             print("0: exit")
             print("1: Add Drone")
