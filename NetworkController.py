@@ -27,8 +27,8 @@ class NetworkController:
         gatewayDrone = Drone(name,PORT,HOST,Coords(int(x), int(y)))
         gatewayDrone.setGateway(True)
         self.droneNetwork.addDrone(gatewayDrone)
-    def updateNetworkMode(self):
-        pass
+    def updateNetworkMode(self, mode):
+        self.droneNetwork.setMode(mode)
     
     def moveGateway(self, name, x ,y):
         self.moveDrone(name, x, y)
