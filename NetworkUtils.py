@@ -177,7 +177,7 @@ def genConsvPath(G: list,
                                 path.reverse()
                                 path.append(dest)
                                 wl = currWl
-                        elif currWl == wl and len(path) > len(prevNodeKey + 1): # Flip paths if less hops found
+                        elif currWl == wl and len(path) > len(prevNodeKey) + 1: # Flip paths if less hops found
                                 path = prevNodeKey.copy()
                                 path.reverse()
                                 path.append(dest)
