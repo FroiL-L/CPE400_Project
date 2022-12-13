@@ -41,8 +41,22 @@ class NetworkUI:
         print("**************")
         print("Network Mode")
         print("**************")
-        #TODO
-
+        print("To select network mode enter either fo the following for the desired path algorithm")
+        print("\t0: Dijkstra/OSPF")
+        print("\t1: Battery Optimized")
+        option = input("Enter Desired Mode: ")
+        if(option == "1"):
+            print("Now using Battery Optimized")
+            self.controller.updateNetworkMode(1)
+        elif(option == "0"):
+            print("Now using OSPF")
+            self.controller.updateNetworkMode(0)
+        else:
+            print("Invalid Option")
+            print("Defaulting to OSPF")
+            self.controller.updateNetworkMode(0)
+        input("Press Enter to Continue")
+        self.clearTerminal()
 
     def sendFile(self):
         print("**************")
@@ -160,6 +174,7 @@ class NetworkUI:
             print("6: Move Gateway")
             print("7: Send Specified File to Gateway")
             print("8: Display Network")
+            print("9: Select Network Mode")
             option = input("Enter option in form of number: ")
             # Clearing the Screen
             self.clearTerminal()
@@ -182,6 +197,8 @@ class NetworkUI:
             self.sendFile()
         elif(option == "8"):
             self.displayNetwork()
+        elif(option == "9"):
+            self.selectNetworkMode()
         elif(option == "0"):
             return True
         else:
