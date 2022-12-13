@@ -32,6 +32,7 @@ class Network:
         self.droneCoords = []
         self.cnxn: socket.socket = None
         self.smp = netu.localSimSendMessage
+        self.mode = 0
         
     ###########################################
     # addDrone():
@@ -112,7 +113,14 @@ class Network:
             return 1
              
         # Send message 
-        path = netu.genDijskraPath(self.drones, source, dest)
+        path = None
+        if self.mode == 0:
+            path = netu.genDijskraPath(self.drones, source, dest)
+        elif self.mode == 1:
+            path = netu.genConsvPath(self.drones, source, dest)
+        else:
+            print("Error: Mode not supported.")
+            return
         self.smp(path, message, self.drones)
             
         return 0
@@ -159,3 +167,6 @@ class Network:
             if(l1[0] == l2[0] and l1[1] == l2[1]):
                 return drone.getName()
         return None
+
+    def setMode(self, mode):
+        self.mode = mode
